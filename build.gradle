@@ -1,12 +1,3 @@
-pluginManagement {
-    repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        gradlePluginPortal()
-        mavenCentral()
-    }
-}
-
-rootProject.name = 'nova'
+- name: Build mod with Gradle
+      working-directory: ./nova-main
+      run: ./gradlew build --refresh-dependencies --no-daemon
