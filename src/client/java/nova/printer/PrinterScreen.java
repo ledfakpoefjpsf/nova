@@ -13,8 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -156,9 +154,7 @@ public final class PrinterScreen extends Screen {
 
             JFileChooser chooser = new JFileChooser();
 
-            chooser.setDialogTitle(
-                    "Select Minecraft schematic"
-            );
+            chooser.setDialogTitle("Select Minecraft schematic");
 
             chooser.setFileFilter(
                     new FileNameExtensionFilter(
@@ -187,8 +183,7 @@ public final class PrinterScreen extends Screen {
 
             loaded = null;
 
-            status = "Load error: "
-                    + exception.getMessage();
+            status = "Load error: " + exception.getMessage();
         }
     }
 
@@ -215,14 +210,9 @@ public final class PrinterScreen extends Screen {
 
         SchematicData data = loaded;
 
-        int baseX = (int) Math.floor(client.player.getX())
-                + offsetX;
-
-        int baseY = (int) Math.floor(client.player.getY())
-                + offsetY;
-
-        int baseZ = (int) Math.floor(client.player.getZ())
-                + offsetZ;
+        int baseX = (int) Math.floor(client.player.getX()) + offsetX;
+        int baseY = (int) Math.floor(client.player.getY()) + offsetY;
+        int baseZ = (int) Math.floor(client.player.getZ()) + offsetZ;
 
         int turns = rotation;
         boolean mirror = mirrorX;
@@ -244,17 +234,18 @@ public final class PrinterScreen extends Screen {
             int placed = 0;
             int skipped = 0;
 
+            int minY = level.getBottomY();
+            int maxY = minY + level.getDimension().height();
+
             for (int y = 0; y < data.height; y++) {
 
                 for (int z = 0; z < data.length; z++) {
 
                     for (int x = 0; x < data.width; x++) {
 
-                        BlockEntry entry =
-                                data.blocks[
-                                        (y * data.length + z)
-                                                * data.width + x
-                                ];
+                        BlockEntry entry = data.blocks[
+                                (y * data.length + z) * data.width + x
+                        ];
 
                         if (entry == null) {
                             skipped++;
@@ -300,14 +291,12 @@ public final class PrinterScreen extends Screen {
                         int py = baseY + y;
                         int pz = baseZ + rz;
 
-                        if (py < level.getBottomY()
-                                || py >= level.getTopY()) {
+                        if (py < minY || py >= maxY) {
                             skipped++;
                             continue;
                         }
 
-                        BlockPos position =
-                                new BlockPos(px, py, pz);
+                        BlockPos position = new BlockPos(px, py, pz);
 
                         if (level.setBlockState(
                                 position,
@@ -342,12 +331,7 @@ public final class PrinterScreen extends Screen {
             float delta
     ) {
 
-        renderBackground(
-                context,
-                mouseX,
-                mouseY,
-                delta
-        );
+        renderBackground(context, mouseX, mouseY, delta);
 
         int center = width / 2;
 
@@ -386,12 +370,7 @@ public final class PrinterScreen extends Screen {
                 0xFFE08A
         );
 
-        super.render(
-                context,
-                mouseX,
-                mouseY,
-                delta
-        );
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
