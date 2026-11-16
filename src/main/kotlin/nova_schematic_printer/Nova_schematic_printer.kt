@@ -1,22 +1,26 @@
+
+// @name: Nova_schematic_printer
+// @type: Kotlin ModInitializer
+// @location: src/main/kotlin/nova_schematic_printer/Nova_schematic_printer.kt
+
 package nova_schematic_printer
 
 import net.fabricmc.api.ModInitializer
-import net.minecraft.resources.Identifier
+import net.minecraft.util.Identifier
 import org.slf4j.LoggerFactory
 
 object Nova_schematic_printer : ModInitializer {
-	const val MOD_ID: String = "nova_schematic_printer"
 
-	private val LOGGER = LoggerFactory.getLogger(MOD_ID)
+    const val MOD_ID: String = "nova_schematic_printer"
 
-	override fun onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+    private val LOGGER = LoggerFactory.getLogger(MOD_ID)
 
-		LOGGER.info("Hello Fabric world!")
-	}
+    override fun onInitialize() {
+        LOGGER.info("Nova Schematic Printer initialized!")
+        LOGGER.info("Nova Schematic Printer is ready.")
+    }
 
-	fun id(path: String): Identifier
-		= Identifier.fromNamespaceAndPath(MOD_ID, path)
+    fun id(path: String): Identifier {
+        return Identifier.of(MOD_ID, path)
+    }
 }
