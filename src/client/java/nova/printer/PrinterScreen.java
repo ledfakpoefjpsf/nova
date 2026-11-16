@@ -1,14 +1,20 @@
 
+// @name: PrinterScreen
+// @type: Java Client Screen
+// @location: src/client/java/nova/printer/PrinterScreen.java
+
 package nova.printer;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -30,7 +36,7 @@ public final class PrinterScreen extends Screen {
     private boolean replaceAir;
 
     public PrinterScreen() {
-        super(Component.literal("Nova Schematic Printer"));
+        super(Text.literal("Nova Schematic Printer"));
     }
 
     @Override
@@ -39,109 +45,108 @@ public final class PrinterScreen extends Screen {
         int center = width / 2;
         int y = height / 2 - 85;
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("LOAD SCHEMATIC"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("LOAD SCHEMATIC"),
                         button -> loadFile()
-                ).bounds(center - 100, y, 200, 22).build()
+                ).dimensions(center - 100, y, 200, 22).build()
         );
 
         y += 29;
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("ROTATE 90°"),
-                        button -> {
-                            rotation = (rotation + 1) % 4;
-                        }
-                ).bounds(center - 100, y, 97, 20).build()
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("ROTATE 90°"),
+                        button -> rotation = (rotation + 1) % 4
+                ).dimensions(center - 100, y, 97, 20).build()
         );
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("MIRROR X"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("MIRROR X"),
                         button -> mirrorX = !mirrorX
-                ).bounds(center + 3, y, 97, 20).build()
+                ).dimensions(center + 3, y, 97, 20).build()
         );
 
         y += 27;
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("X -"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("X -"),
                         button -> offsetX--
-                ).bounds(center - 100, y, 47, 20).build()
+                ).dimensions(center - 100, y, 47, 20).build()
         );
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("X +"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("X +"),
                         button -> offsetX++
-                ).bounds(center - 49, y, 47, 20).build()
+                ).dimensions(center - 49, y, 47, 20).build()
         );
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("Y -"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("Y -"),
                         button -> offsetY--
-                ).bounds(center + 3, y, 47, 20).build()
+                ).dimensions(center + 3, y, 47, 20).build()
         );
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("Y +"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("Y +"),
                         button -> offsetY++
-                ).bounds(center + 54, y, 46, 20).build()
+                ).dimensions(center + 54, y, 46, 20).build()
         );
 
         y += 25;
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("Z -"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("Z -"),
                         button -> offsetZ--
-                ).bounds(center - 100, y, 47, 20).build()
+                ).dimensions(center - 100, y, 47, 20).build()
         );
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("Z +"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("Z +"),
                         button -> offsetZ++
-                ).bounds(center - 49, y, 47, 20).build()
+                ).dimensions(center - 49, y, 47, 20).build()
         );
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("AIR: SKIP"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("AIR: SKIP"),
                         button -> {
                             replaceAir = !replaceAir;
+
                             button.setMessage(
-                                    Component.literal(
+                                    Text.literal(
                                             replaceAir
                                                     ? "AIR: REPLACE"
                                                     : "AIR: SKIP"
                                     )
                             );
                         }
-                ).bounds(center + 3, y, 97, 20).build()
+                ).dimensions(center + 3, y, 97, 20).build()
         );
 
         y += 29;
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("PRINT INSTANTLY"),
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("PRINT INSTANTLY"),
                         button -> print()
-                ).bounds(center - 100, y, 200, 25).build()
+                ).dimensions(center - 100, y, 200, 25).build()
         );
 
         y += 32;
 
-        addRenderableWidget(
-                Button.builder(
-                        Component.literal("CLOSE"),
-                        button -> onClose()
-                ).bounds(center - 100, y, 200, 20).build()
+        addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal("CLOSE"),
+                        button -> close()
+                ).dimensions(center - 100, y, 200, 20).build()
         );
     }
 
@@ -189,20 +194,19 @@ public final class PrinterScreen extends Screen {
 
     private void print() {
 
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
 
         if (loaded == null) {
             status = "Load a schematic first.";
             return;
         }
 
-        if (client.player == null || client.level == null) {
+        if (client.player == null || client.world == null) {
             status = "Enter a world first.";
             return;
         }
 
-        MinecraftServer server =
-                client.getSingleplayerServer();
+        MinecraftServer server = client.getServer();
 
         if (server == null) {
             status = "Singleplayer printing only. Multiplayer needs server support.";
@@ -224,15 +228,16 @@ public final class PrinterScreen extends Screen {
         boolean mirror = mirrorX;
         boolean air = replaceAir;
 
-        var dimension = client.player.level().dimension();
+        var dimension = client.world.getRegistryKey();
 
         status = "Printing...";
 
         server.execute(() -> {
 
-            ServerLevel level = server.getLevel(dimension);
+            ServerWorld level = server.getWorld(dimension);
 
             if (level == null) {
+                client.execute(() -> status = "Could not find target world.");
                 return;
             }
 
@@ -295,8 +300,8 @@ public final class PrinterScreen extends Screen {
                         int py = baseY + y;
                         int pz = baseZ + rz;
 
-                        if (py < level.getMinY()
-                                || py >= level.getMaxY()) {
+                        if (py < level.getBottomY()
+                                || py >= level.getTopY()) {
                             skipped++;
                             continue;
                         }
@@ -304,9 +309,10 @@ public final class PrinterScreen extends Screen {
                         BlockPos position =
                                 new BlockPos(px, py, pz);
 
-                        if (level.setBlockAndUpdate(
+                        if (level.setBlockState(
                                 position,
-                                entry.state()
+                                entry.state(),
+                                3
                         )) {
                             placed++;
                         } else {
@@ -330,39 +336,39 @@ public final class PrinterScreen extends Screen {
 
     @Override
     public void render(
-            GuiGraphics graphics,
+            DrawContext context,
             int mouseX,
             int mouseY,
-            float partialTick
+            float delta
     ) {
 
         renderBackground(
-                graphics,
+                context,
                 mouseX,
                 mouseY,
-                partialTick
+                delta
         );
 
         int center = width / 2;
 
-        graphics.drawCenteredString(
-                font,
+        context.drawCenteredTextWithShadow(
+                textRenderer,
                 "NOVA SCHEMATIC PRINTER",
                 center,
                 height / 2 - 119,
                 0x55DDFF
         );
 
-        graphics.drawCenteredString(
-                font,
+        context.drawCenteredTextWithShadow(
+                textRenderer,
                 fileLabel,
                 center,
                 height / 2 - 105,
                 0xFFFFFF
         );
 
-        graphics.drawCenteredString(
-                font,
+        context.drawCenteredTextWithShadow(
+                textRenderer,
                 "Offset: X " + offsetX
                         + " Y " + offsetY
                         + " Z " + offsetZ
@@ -372,8 +378,8 @@ public final class PrinterScreen extends Screen {
                 0xBBDDEE
         );
 
-        graphics.drawCenteredString(
-                font,
+        context.drawCenteredTextWithShadow(
+                textRenderer,
                 status,
                 center,
                 height / 2 + 116,
@@ -381,15 +387,15 @@ public final class PrinterScreen extends Screen {
         );
 
         super.render(
-                graphics,
+                context,
                 mouseX,
                 mouseY,
-                partialTick
+                delta
         );
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 }
