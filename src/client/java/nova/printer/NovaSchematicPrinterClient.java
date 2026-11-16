@@ -1,45 +1,42 @@
 
+ // @name: NovaSchematicPrinterClient
+ // @type: Java Client Initializer
+ // @location: src/client/java/nova/printer/NovaSchematicPrinterClient.java
+
 package nova.printer;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-public class NovaSchematicPrinterClient
-        implements ClientModInitializer {
+public class NovaSchematicPrinterClient implements ClientModInitializer {
 
-    private static KeyMapping openKey;
+    private static KeyBinding openKey;
 
     @Override
     public void onInitializeClient() {
 
-        KeyMapping.Category category =
-                KeyMapping.Category.register(
-                        Identifier.fromNamespaceAndPath(
-                                "nova_schematic_printer",
-                                "main"
-                        )
-                );
+        KeyBinding.Category category = KeyBinding.Category.register(
+                Identifier.of("nova_schematic_printer", "main")
+        );
 
         openKey = KeyBindingHelper.registerKeyBinding(
-                new KeyMapping(
+                new KeyBinding(
                         "key.nova_schematic_printer.open",
-                        InputConstants.Type.KEYSYM,
+                        InputUtil.Type.KEYSYM,
                         GLFW.GLFW_KEY_RIGHT_SHIFT,
                         category
                 )
         );
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-
-            while (openKey.consumeClick()) {
-
+            while (openKey.wasPressed()) {
                 if (client.player != null) {
                     client.setScreen(new PrinterScreen());
                 }
@@ -48,12 +45,11 @@ public class NovaSchematicPrinterClient
     }
 
     public static void message(String text) {
-
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player != null) {
-            client.player.displayClientMessage(
-                    Component.literal("[Nova Printer] " + text),
+            client.player.sendMessage(
+                    Text.literal("[Nova Printer] " + text),
                     false
             );
         }
