@@ -1,5 +1,5 @@
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.ALLOW_PROJECT)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         maven {
             name = 'Fabric'
