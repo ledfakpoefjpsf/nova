@@ -157,7 +157,7 @@ public final class PrinterScreen extends Screen {
         }
 
         loading = true;
-        status = "Opening Windows file picker...";
+        status = "Opening schematics folder...";
 
         MinecraftClient client = MinecraftClient.getInstance();
 
@@ -167,10 +167,26 @@ public final class PrinterScreen extends Screen {
 
             try {
 
+                File schematicFolder = new File(
+                        client.runDirectory,
+                        "schematics"
+                );
+
+                if (!schematicFolder.exists()
+                        && !schematicFolder.mkdirs()) {
+                    throw new IllegalStateException(
+                            "Could not create schematics folder."
+                    );
+                }
+
                 FileDialog dialog = new FileDialog(
                         (Frame) null,
                         "Select Minecraft schematic",
                         FileDialog.LOAD
+                );
+
+                dialog.setDirectory(
+                        schematicFolder.getAbsolutePath()
                 );
 
                 dialog.setFilenameFilter(
