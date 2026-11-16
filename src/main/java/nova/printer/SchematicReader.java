@@ -1,11 +1,15 @@
 
 package nova.printer;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Property;
+// @name: SchematicReader
+// @type: Java class
+// @location: src/main/java/nova/printer/SchematicReader.java
+
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.state.property.Property;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -136,13 +140,13 @@ public final class SchematicReader {
 
         Identifier key = Identifier.tryParse(id);
 
-        if (key == null || !BuiltInRegistries.BLOCK.containsKey(key)) {
+        if (key == null || !Registries.BLOCK.containsId(key)) {
             throw new IOException("Unknown block: " + id);
         }
 
-        Block block = BuiltInRegistries.BLOCK.get(key);
+        Block block = Registries.BLOCK.get(key);
 
-        BlockState state = block.defaultBlockState();
+        BlockState state = block.getDefaultState();
 
         if (properties != null && !properties.isBlank()) {
 
@@ -155,7 +159,7 @@ public final class SchematicReader {
                 }
 
                 Property<?> property =
-                        block.getStateDefinition()
+                        block.getStateManager()
                                 .getProperty(pair[0].trim());
 
                 if (property != null) {
@@ -178,10 +182,10 @@ public final class SchematicReader {
             String value
     ) {
 
-        Optional<T> parsed = property.getValue(value);
+        Optional<T> parsed = property.parse(value);
 
         return parsed.map(
-                valueObject -> state.setValue(
+                valueObject -> state.with(
                         property,
                         valueObject
                 )
