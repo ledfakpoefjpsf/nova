@@ -7,7 +7,7 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("fabric-loom") version "1.14.0"
+    id("fabric-loom") version "1.13.6"
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "2.4.21"
 }
@@ -74,15 +74,8 @@ dependencies {
         "net.fabricmc:fabric-language-kotlin:${providers.gradleProperty("fabric_kotlin_version").get()}"
     )
 
-    // Litematica 0.26.16 - compile-time integration
-    modCompileOnly(
-        "maven.modrinth:bEpr0Arc:mengBR9D"
-    )
-
-    // MaLiLib 0.27.20 - compile-time integration
-    modCompileOnly(
-        "maven.modrinth:GcWjdA9I:loabWpyU"
-    )
+    modCompileOnly("maven.modrinth:bEpr0Arc:mengBR9D")
+    modCompileOnly("maven.modrinth:GcWjdA9I:loabWpyU")
 }
 
 tasks.processResources {
