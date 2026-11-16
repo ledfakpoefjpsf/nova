@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("fabric-loom") version "1.13.6"
-    id("maven-publish")
+    `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "2.4.21"
 }
 
@@ -17,6 +17,11 @@ repositories {
     maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
+    }
+
+    maven {
+        name = "Parchment"
+        url = uri("https://maven.parchmentmc.org")
     }
 }
 
@@ -39,19 +44,12 @@ fabricApi {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${providers.gradleProperty("minecraft_version").get()}")
-
-    val yarnMappings = providers.gradleProperty("yarn_mappings").get()
+    minecraft(
+        "com.mojang:minecraft:${providers.gradleProperty("minecraft_version").get()}"
+    )
 
     mappings(
-        if (yarnMappings.contains("+build.")) {
-            loom.layered {
-                officialMojangMappings()
-                parchment("org.parchmentmc.data:parchment-${yarnMappings}")
-            }
-        } else {
-            loom.officialMojangMappings()
-        }
+        "net.fabricmc:yarn:${providers.gradleProperty("yarn_mappings").get()}:v2"
     )
 
     modImplementation(
