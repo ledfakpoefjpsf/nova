@@ -1,11 +1,11 @@
 pluginManagement {
-	repositories {
-		maven("https://maven.fabricmc.net/") {
-			name = "Fabric"
-		}
-		gradlePluginPortal()
-		mavenCentral()
-	}
+    repositories {
+        maven {
+            url 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
 }
 
-rootProject.name = "nova"
+rootProject.name = 'nova'
