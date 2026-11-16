@@ -331,10 +331,18 @@ public final class PrinterScreen extends Screen {
             float delta
     ) {
 
-        renderBackground(context, mouseX, mouseY, delta);
+        // Custom background: avoids Minecraft's duplicate blur operation.
+        context.fill(
+                0,
+                0,
+                width,
+                height,
+                0xC0101525
+        );
 
         int center = width / 2;
 
+        // Nova title
         context.drawCenteredTextWithShadow(
                 textRenderer,
                 "NOVA SCHEMATIC PRINTER",
