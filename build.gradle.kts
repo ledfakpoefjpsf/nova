@@ -1,5 +1,5 @@
 
-// @name: Nova Schematic Printer Build Configuration
+// @name: Nova Schematic Printer
 // @type: Gradle Kotlin DSL
 // @location: build.gradle.kts
 
@@ -11,17 +11,21 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.4.21"
 }
 
+group = project.property("maven_group") as String
+version = project.property("mod_version") as String
+
+base {
+    archivesName.set(
+        project.property("archives_base_name") as String
+    )
+}
+
 repositories {
     mavenCentral()
 
     maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
-    }
-
-    maven {
-        name = "Parchment"
-        url = uri("https://maven.parchmentmc.org")
     }
 }
 
