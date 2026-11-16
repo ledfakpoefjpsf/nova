@@ -1,15 +1,15 @@
 
- // @name: NovaSchematicPrinterClient
- // @type: Java Client Initializer
- // @location: src/client/java/nova/printer/NovaSchematicPrinterClient.java
+// @name: NovaSchematicPrinterClient
+// @type: Java Client Initializer
+// @location: src/client/java/nova/printer/NovaSchematicPrinterClient.java
 
 package nova.printer;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -22,7 +22,7 @@ public class NovaSchematicPrinterClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
-        KeyBinding.Category category = KeyBinding.Category.register(
+        KeyBinding.Category category = KeyBinding.Category.create(
                 Identifier.of("nova_schematic_printer", "main")
         );
 
@@ -44,12 +44,12 @@ public class NovaSchematicPrinterClient implements ClientModInitializer {
         });
     }
 
-    public static void message(String text) {
+    public static void message(String message) {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player != null) {
             client.player.sendMessage(
-                    Text.literal("[Nova Printer] " + text),
+                    Text.literal("[Nova Printer] " + message),
                     false
             );
         }
