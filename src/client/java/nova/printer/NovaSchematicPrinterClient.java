@@ -15,12 +15,33 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
+
 public class NovaSchematicPrinterClient implements ClientModInitializer {
 
     private static KeyBinding openKey;
 
     @Override
     public void onInitializeClient() {
+
+        // Automatically create the schematics folder.
+        File schematicFolder = new File(
+                MinecraftClient.getInstance().runDirectory,
+                "schematics"
+        );
+
+        if (!schematicFolder.exists()) {
+            if (schematicFolder.mkdirs()) {
+                System.out.println(
+                        "[Nova Printer] Created schematics folder: "
+                                + schematicFolder.getAbsolutePath()
+                );
+            } else {
+                System.err.println(
+                        "[Nova Printer] Could not create schematics folder!"
+                );
+            }
+        }
 
         KeyBinding.Category category = KeyBinding.Category.create(
                 Identifier.of("nova_schematic_printer", "main")
