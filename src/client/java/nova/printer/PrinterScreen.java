@@ -14,8 +14,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.EventQueue;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.io.File;
 
 public final class PrinterScreen extends Screen {
@@ -32,6 +33,7 @@ public final class PrinterScreen extends Screen {
     private int rotation;
     private boolean mirrorX;
     private boolean replaceAir;
+    private boolean loading;
 
     public PrinterScreen() {
         super(Text.literal("Nova Schematic Printer"));
@@ -150,41 +152,98 @@ public final class PrinterScreen extends Screen {
 
     private void loadFile() {
 
-        try {
+        if (loading) {
+            return;
+        }
 
-            JFileChooser chooser = new JFileChooser();
+        loading = true;
+        status = "Opening Windows file picker...";
 
-            chooser.setDialogTitle("Select Minecraft schematic");
+        MinecraftClient client = MinecraftClient.getInstance();
 
-            chooser.setFileFilter(
-                    new FileNameExtensionFilter(
-                            "Sponge schematic (*.schem)",
-                            "schem"
-                    )
-            );
+        EventQueue.invokeLater(() -> {
 
-            if (chooser.showOpenDialog(null)
-                    != JFileChooser.APPROVE_OPTION) {
+            File selectedFile = null;
+
+            try {
+
+                FileDialog dialog = new FileDialog(
+                        (Frame) null,
+                        "Select Minecraft schematic",
+                        FileDialog.LOAD
+                );
+
+                dialog.setFilenameFilter(
+                        (directory, name) ->
+                                name.toLowerCase().endsWith(".schem")
+                );
+
+                dialog.setAlwaysOnTop(true);
+                dialog.setVisible(true);
+
+                String selectedName = dialog.getFile();
+                String selectedDirectory = dialog.getDirectory();
+
+                if (selectedName != null && selectedDirectory != null) {
+                    selectedFile = new File(
+                            selectedDirectory,
+                            selectedName
+                    );
+                }
+
+                dialog.dispose();
+
+            } catch (Exception exception) {
+
+                String error = exception.getMessage();
+
+                client.execute(() -> {
+                    loading = false;
+                    status = "File picker error: " + error;
+                });
+
                 return;
             }
 
-            File file = chooser.getSelectedFile();
+            File finalFile = selectedFile;
 
-            loaded = SchematicReader.read(file.toPath());
+            if (finalFile == null) {
+                client.execute(() -> {
+                    loading = false;
+                    status = "File selection cancelled.";
+                });
+                return;
+            }
 
-            fileLabel = file.getName();
+            try {
 
-            status = "Loaded "
-                    + loaded.width + " x "
-                    + loaded.height + " x "
-                    + loaded.length;
+                SchematicData result = SchematicReader.read(
+                        finalFile.toPath()
+                );
 
-        } catch (Exception exception) {
+                client.execute(() -> {
+                    loaded = result;
+                    fileLabel = finalFile.getName();
 
-            loaded = null;
+                    status = "Loaded "
+                            + loaded.width + " x "
+                            + loaded.height + " x "
+                            + loaded.length;
 
-            status = "Load error: " + exception.getMessage();
-        }
+                    loading = false;
+                });
+
+            } catch (Exception exception) {
+
+                String error = exception.getMessage();
+
+                client.execute(() -> {
+                    loaded = null;
+                    loading = false;
+                    status = "Load error: " + error;
+                });
+            }
+        });
     }
 
     private void print() {
@@ -227,7 +286,9 @@ public final class PrinterScreen extends Screen {
             ServerWorld level = server.getWorld(dimension);
 
             if (level == null) {
-                client.execute(() -> status = "Could not find target world.");
+                client.execute(() ->
+                        status = "Could not find target world."
+                );
                 return;
             }
 
@@ -331,7 +392,6 @@ public final class PrinterScreen extends Screen {
             float delta
     ) {
 
-        // Custom background: avoids Minecraft's duplicate blur operation.
         context.fill(
                 0,
                 0,
@@ -342,7 +402,6 @@ public final class PrinterScreen extends Screen {
 
         int center = width / 2;
 
-        // Nova title
         context.drawCenteredTextWithShadow(
                 textRenderer,
                 "NOVA SCHEMATIC PRINTER",
