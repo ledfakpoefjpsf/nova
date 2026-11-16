@@ -1,7 +1,11 @@
 
 package nova.printer;
 
-import net.minecraft.world.level.block.state.BlockState;
+// @name: SchematicData
+// @type: Java class
+// @location: src/main/java/nova/printer/SchematicData.java
+
+import net.minecraft.block.BlockState;
 
 public final class SchematicData {
 
